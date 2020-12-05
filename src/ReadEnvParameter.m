@@ -1,4 +1,4 @@
-function [casename,N,cpmax,dr,zs,rmax,freq,H,...
+function [casename,N,cpmax,dr,zs,zr,dz,rmax,freq,H,...
     tlmin,tlmax,alpha,dep,c] = ReadEnvParameter(env_file)
     fid      = fopen(env_file);
     casename = fgetl(fid);
@@ -6,6 +6,8 @@ function [casename,N,cpmax,dr,zs,rmax,freq,H,...
     cpmax    = fscanf(fid,'%f',1);
     freq     = fscanf(fid,'%f',1);
     zs       = fscanf(fid,'%f',1);
+    zr       = fscanf(fid,'%f',1);
+    dz       = fscanf(fid,'%f',1);
     rmax     = fscanf(fid,'%f',1);
     dr       = fscanf(fid,'%f',1);
     H        = fscanf(fid,'%f',1);
@@ -25,6 +27,10 @@ function [casename,N,cpmax,dr,zs,rmax,freq,H,...
     % Check the input sound profile
     if(dep(1) ~=0.0 || dep(n)~=H)
         error('Error! input sound profile is unsuitable!');
+    end
+    
+    if((H / dz - floor(H / dz)) ~=0)
+        error('Error! The input dz unsuitable!');
     end
 
     if((rmax / dr - floor(rmax / dr))~=0)
