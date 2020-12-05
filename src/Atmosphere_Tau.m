@@ -1,12 +1,12 @@
 %点取得太少就容易出问题
 
 clear;
-close all;
+% close all;
 clc;
 % edit 'input_CAA.txt';
 tic
 [casename,N,cpmax,dr,zs,rmax,freq,H,...
-    tlmin,tlmax,alpha,dep,c]=Read_input('input_CAA.txt');
+    tlmin,tlmax,alpha,dep,c] = ReadEnvParameter('input_CAA.txt');
 
 w  = 2 * pi * freq;
 nr = rmax / dr;
@@ -37,45 +37,6 @@ ShowSoundField(r,zr,tl,tlmin,tlmax,casename);
 
 toc
 %-------------------------------------------------------------------------- 
-
-
-function [casename,N,cpmax,dr,zs,rmax,freq,H,...
-    tlmin,tlmax,alpha,dep,c]=Read_input(env_file)
-    fid      = fopen(env_file);
-    casename = fgetl(fid);
-    N = fscanf(fid,'%d',1);
-    cpmax = fscanf(fid,'%f',1);
-    freq  = fscanf(fid,'%f',1);
-    zs    = fscanf(fid,'%f',1);
-    rmax  = fscanf(fid,'%f',1);
-    dr    = fscanf(fid,'%f',1);
-    H     = fscanf(fid,'%f',1);
-    tlmin = fscanf(fid,'%f',1);
-    tlmax = fscanf(fid,'%f',1);
-    n   = fscanf(fid,'%d',1);
-    if(H >0.0  && N>2)
-        Profile    = fscanf(fid,'%f %f',[3,n]);
-        dep(1:n)   = Profile(1,1:n);
-        c(1:n)     = Profile(2,1:n);
-        alpha(1:n) = Profile(3,1:n);
-    else
-        error('Error! H must greater than 0!');
-    end
-    % Check the input sound profile
-    if(dep(1) ~=0.0 || dep(n)~=H)
-        error('Error! input sound profile is unsuitable!');
-    end
-
-    if((rmax/dr-floor(rmax/dr))~=0)
-        error('Please reinput the dr and rmax!');
-    end
-
-    if(tlmin >= tlmax)
-        error('tlmin must less than tlmax!');
-    end
-
-    fclose(fid);
-end
 
 function D  = DerivationMatrix(n)
 
@@ -179,33 +140,6 @@ function [kr,eigvector] = EigenValueVectorTau(N,H,k)
 
 end
 
-function [nmodes,kr,v]= NumofModes(freq,kr,v,cpmax)
-    % cp=2*pi*freq./real(kr);
-    % nmodes =0;
-    % for i=1:length(kr)
-    %     if(cp(i)<=cpmax )
-    %         nmodes=i;
-    %     end
-    % end
-    % 
-    % if(cp(length(kr))<cpmax)
-    %     nmodes=length(kr);
-    % end
-    % 
-    % if(nmodes==0)
-    %     error('Incorrect maximum phase speed input!');
-    % end
-    % kr=kr(1:nmodes);
-    % v=v(:,1:nmodes);
-
-    %--------example1----------------------------------------------------
-    ind = find(real(kr)<1.85 & real(kr)>1.6 & imag(kr)>0 & imag(kr)<0.005);
-    nmodes = length(ind);
-    kr = kr(ind);
-    v  = v (:, ind);
-
-end
-
 function [psi,psizs] = Normalization(eigvector,nmodes,H,xr,zr,zs)
    
    psi   = InvChebTrans(eigvector, xr); 
@@ -223,41 +157,4 @@ function [psi,psizs] = Normalization(eigvector,nmodes,H,xr,zr,zs)
    psi   = psi * diag(1.0 ./sqrt(P * f * H / 2));  
    psizs = interp1(zr, psi, zs, 'linear');
    
-end
-
-function tl = SynthesizeSoundField(r,kr,psizs,psi)
-
-    range = kr * r;
-    range = exp(1i * range) ./ sqrt(range);
-
-    p     = psi * diag(psizs) * range * sqrt(2 * pi);
-    tl    = -20 * log10(abs(p));
-
-end
-
-function ShowWavenumbers(kr,casename)
-
-    disp('plot the modal wavenumbers!');
-    figure;
-    plot(real(kr),imag(kr),'r*');grid on;
-    axis( [1.6 1.85 0 0.035] );
-    xlabel('Real Wave Number (1/m)');
-    ylabel('Imaginary Wave Number (1/m)');
-    title(casename);
-    set(gca,'FontSize',14,'FontName','Times New Roman');
-
-end
-
-function ShowSoundField(r,z,tl,tlmin,tlmax,casename)
-
-    figure;
-    disp('plot the transmission loss field');
-    pcolor( r./1000, z, tl );
-    caxis( [tlmin tlmax] ); colormap( gray );
-    shading flat; view( 0, 90 );
-    xlabel( 'Range (km)'); ylabel( 'Depth (m)');
-    colorbar;
-    title(casename);
-    set(gca,'FontSize',16,'FontName','Times New Roman');
-
 end
