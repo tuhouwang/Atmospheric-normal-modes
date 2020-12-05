@@ -3,7 +3,7 @@ clear;
 clc;
 % edit 'input_CAA.txt';
 tic
-[casename,N,cpmax,dr,zs,rmax,freq,H,tlmin,tlmax,...
+[casename,N,cpmax,dr,zs,zr,dz,rmax,freq,H,tlmin,tlmax,...
           alpha,dep,c] = ReadEnvParameter('input_CAA.txt');
 
 w  = 2 * pi * freq;
@@ -12,7 +12,7 @@ r  = dr : dr : rmax;
 
 x  = - cos((0 : N) * pi / N)'; %[-1, 1]
 z  = (1 + x) * H / 2.0;        %[0 , H]
-zr = 0 : 2 : H;
+zl = 0 : dz : H;
 
 c      = interp1(dep, c   ,z,'linear');
 alpha  = interp1(dep,alpha,z,'linear');
@@ -27,11 +27,13 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 [psi,psizs] = Normalization(eigvector,x,z,zs);
 
-tl = SynthesizeSoundField(r,kr,psizs,psi);
+[tl,tl_zr] = SynthesizeSoundField(r,kr,z,zr,psizs,psi);
 
-tl = interp1(z,tl,zr,'linear');
+tl = interp1(z,tl,zl,'linear');
 
-ShowSoundField(r,zr,tl,tlmin,tlmax,casename);
+ShowSoundField(r,zl,tl,tlmin,tlmax,casename);
+
+ShowTLcurve(r,zr,tl_zr);
 
 toc
 %--------------------------------------------------------------------------
