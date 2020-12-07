@@ -1,4 +1,4 @@
-function [nmodes,kr,v] = NumofModes(freq,kr,v,cpmax)
+function [nmodes,kr,v] = NumOfModes(freq,kr,v,cpmax)
 
     % cp = 2 * pi * freq ./real(kr);
     % nmodes = 0;
