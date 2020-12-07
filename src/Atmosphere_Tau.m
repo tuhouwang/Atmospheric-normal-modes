@@ -27,7 +27,7 @@ k  = w ./ c .*(1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 % ShowWavenumbers(kr,casename);
 
-[nmodes,kr,eigvector] = NumofModes(freq,kr,eigvector,cpmax);
+[nmodes,kr,eigvector] = NumOfModes(w,kr,eigvector,cpmax);
 
 [psi,psizs] = Normalization(eigvector,nmodes,H,xl,zl,zs);
 
@@ -39,79 +39,6 @@ ShowTLcurve(r,zr,tl_zr);
 
 toc
 %-------------------------------------------------------------------------- 
-
-function D  = DerivationMatrix(n)
-
-    D = zeros(n, n);
-    for k = 1 : n
-        j = k+1 : 2 : n;
-        D(k, j) = 2 * j - 2;
-    end
-    D(1, :) = D(1, :) / 2;
-
-end
-
-function C  = ConvolutionMatrix(v)
-
-    n = length(v);
-    C = zeros(n, n);
-    
-    for i = 1 : n
-        for k = 1 : n
-            
-            j = k - i + 1;       
-            if (j >= 1 && j <= n)
-                C(k,i) = C(k,i) + v(j);
-            end
-            
-            j = i - k + 1;
-            if (j <= n && j >= 1)
-                C(k,i) = C(k,i) + v(j);
-            end
-            
-            if (k > 1)
-                j = i + k - 1 ;
-                if (j <= n && j >= 1)
-                    C(k,i) = C(k,i) + v(j);
-                end  
-            end
-            C(k,i) = C(k,i) * 0.5; 
-        end
-    end
-
-end
-
-function fk = ChebTransFFT(N, fx)
-
-%  The function computes the Chebyshev tranforms by FFT in the nodes:
-%  x_j = cos(j pi/N) from Physical space to Spectral space.
-%  
-%  Input:
-%  N:           Degree of polynomials, must be even
-%  fx:          vector to be transformed
-
-%  Output:
-%  fk:          Chebyshev coefficients of fx
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    fk = fft([fx; flipud(fx(2:N))]);              % Extend and compute fft
-    fk = fk(1:N+1).*[0.5; ones(N-1,1); 0.5]/N;    % fk contains Chebyshev
-                                                  % coefficients of fx
-end
-
-function fx = InvChebTrans(fk,z)
-
-    n = size(fk, 1);
-    m = length(z);
-    T = zeros(m, n);
-    
-    for k = 0 : n-1
-        T(:, k+1) = cos( k * acos(z) );
-    end
-    
-    fx = T * fk;
-
-end
 
 function [kr,eigvector] = EigenValueVectorTau(N,H,k)
     D  = DerivationMatrix(N+1);
