@@ -23,7 +23,7 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 % ShowWavenumbers(kr,casename);
 
-[nmodes,kr,eigvector] = NumofModes(freq,kr,eigvector,cpmax);
+[nmodes,kr,eigvector] = NumOfModes(w,kr,eigvector,cpmax);
 
 [psi,psizs] = Normalization(eigvector,x,z,zs);
 
