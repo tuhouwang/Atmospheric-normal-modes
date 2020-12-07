@@ -1,4 +1,3 @@
-%点取得太少就容易出问题
 
 clear;
 % close all;
@@ -50,7 +49,7 @@ function [kr,eigvector] = EigenValueVectorTau(N,H,k)
 
     A(N,:)   = Pg;
     A(N+1,:) = Pa;
-    %矩阵分块
+    %blocking
     L11  = A(1:N-1,1:N-1);
     L12  = A(1:N-1,N:N+1);
     L21  = A(N:N+1,1:N-1);
