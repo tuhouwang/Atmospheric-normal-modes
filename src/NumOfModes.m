@@ -1,6 +1,6 @@
 function [nmodes,kr,v] = NumOfModes(w,kr,v,cpmax)
 
-%     cp = w ./real(kr);
+%     cp = w ./ real(kr);
 %     nmodes = length( find( cp <= cpmax ) );
 % 
 %     if(nmodes == 0)
