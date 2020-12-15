@@ -25,7 +25,7 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 [nmodes, kr, eigvector] = NumOfModes(w, kr, eigvector, cpmax);
 
-[psi, psizs] = Normalization(eigvector, x, z, zs);
+[psi, psizs] = Normalization(eigvector, z, zs);
 
 [tl, tl_zr] = SynthesizeSoundField(r, kr, z, zr, psizs, psi);
 
@@ -82,24 +82,17 @@ function D = Collocation(N, x)
 
 end
 
-function [psi, psizs] = Normalization(eigvector, x, z, zs)
+function [psi, psizs] = Normalization(eigvector, z, zs)
 
-    N    = length(z) - 1;
-    w    = [pi / 2 / N; pi / N * ones(N-1, 1); pi/ 2 / N];
     norm = zeros(size(eigvector, 2), 1);
 
     for i = 1 : size(eigvector, 2)
 
-        f = eigvector(:, i);
-        f = f .^ 2;
-
-        for j = 1 : length(z)
-             norm(i) = norm(i) + w(j) * f(j) * (sqrt(1 - x(j) ^ 2));
-        end
+        norm(i) = ChebGaussQuadrature( eigvector(:, i) .^ 2 );
 
     end
 
-    psi   = eigvector * diag(1.0 ./ sqrt(z(length(z)) / 2 * norm));
+    psi   = eigvector * diag( 1.0 ./ sqrt( z( length(z) ) / 2 * norm ) );
     psizs = interp1(z, psi, zs, 'linear');
 
 end
