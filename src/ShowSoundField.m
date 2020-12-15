@@ -5,8 +5,8 @@ function ShowSoundField(r,z,tl,tlmin,tlmax,casename)
     pcolor( r./1000, z, tl );
     caxis( [tlmin tlmax] ); colormap( gray );
     shading flat; view( 0, 90 );
-    xlabel( 'Range (km)'); ylabel( 'Depth (m)');
-    colorbar;title(casename);
-    set(gca,'FontSize',16,'FontName','Times New Roman');
+    xlabel( 'Range (km)'); ylabel( 'Height (m)');
+    colorbar;title(casename);box off;
+    set(gca,'FontSize',14);
 
 end

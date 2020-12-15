@@ -3,8 +3,8 @@ close all;
 clc;
 % edit 'input_CAA.txt';
 tic
-[casename, N, cpmax, dr, zs, zr, dz, rmax, freq, H, tlmin, tlmax, ...
-          alpha, dep, c] = ReadEnvParameter('input_CAA.txt');
+[casename, N, cpmax, dr, zs, zr, dz, rmax, freq, H, Zground, tlmin, ...
+         tlmax, alpha, dep, c] = ReadEnvParameter('input_CAA.txt');
 
 w  = 2 * pi * freq;
 nr = rmax / dr;
@@ -19,7 +19,7 @@ alpha  = interp1(dep, alpha, z, 'linear');
 
 k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
-[kr, eigvector] = EigenValueVectorCollocation(N, H, k, x);
+[kr, eigvector] = EigenValueVectorCollocation(N, H, Zground, k, x);
 
 % ShowWavenumbers(kr, casename);
 
@@ -29,22 +29,24 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 [tl, tl_zr] = SynthesizeSoundField(r, kr, z, zr, psizs, psi);
 
+% ShowMode(psi, z);
+
 tl = interp1(z, tl, zl, 'linear');
 
 ShowSoundField(r, zl, tl, tlmin, tlmax, casename);
 
-ShowTLcurve(r, zr, tl_zr);
+% ShowTLcurve(r, zr, tl_zr);
 
 toc
 %--------------------------------------------------------------------------
 
-function [kr, eigvector] = EigenValueVectorCollocation(N, H, k, x)
+function [kr, eigvector] = EigenValueVectorCollocation(N, H, Zground, k, x)
 
     D          = Collocation(N, x);
     A          = 4.0 / H /H * D * D + diag(k .^ 2);
     %Set boundary conditions
     A(1,     :) = 2.0 / H * D(1, :);
-    A(1,     1) = A(1, 1) + 1i * k(1) / (12.97 + 12.38i);
+    A(1,     1) = A(1, 1) + 1i * k(1) / Zground;
     A(N+1,   :) = 2.0 / H * D(N + 1, :);
     A(N+1, N+1) = A(N + 1, N + 1) - 1i * k(N + 1);
     % Row transformations and column transformations

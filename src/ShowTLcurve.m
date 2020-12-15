@@ -1,11 +1,11 @@
 function ShowTLcurve(r,zr,tl_zr)
 
-    figure;
+%     figure;
     disp('plot the transmission loss curve at zr!');
-    plot(r,tl_zr,'b-','LineWidth',1.5);
+    plot(r./1000,tl_zr,'b-','LineWidth',1.5);
     set(gca,'YDir','reverse');
-    xlabel( 'Range (m)'); ylabel('TL (dB)');
+    xlabel( 'Range (km)'); ylabel('TL (dB)');
     title(['Depth=',num2str(zr),'m']);
-    set(gca,'FontSize',16,'FontName','Times New Roman');
+    set(gca,'FontSize',14);
 
 end
