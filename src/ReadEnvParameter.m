@@ -43,7 +43,7 @@ function [casename, N, cpmax, dr, zs, zr, dz, rmax, freq, H, Zground, ...
         error('tlmin must less than tlmax!');
     end
     
-    Zground = Zg_re + Zg_im;
+    Zground = Zg_re + 1i * Zg_im;
 
     fclose(fid);
 end

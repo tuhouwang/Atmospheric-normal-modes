@@ -1,5 +1,5 @@
 clear;
-close all;
+% close all;
 clc;
 % edit 'input_CAA.txt';
 tic
@@ -25,7 +25,7 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 [nmodes, kr, eigvector] = NumOfModes(w, kr, eigvector, cpmax);
 
-[psi, psizs] = Normalization(eigvector, z, zs);
+[psi, psizs] = Normalization(eigvector, H, z, zs);
 
 [tl, tl_zr] = SynthesizeSoundField(r, kr, z, zr, psizs, psi);
 
@@ -33,9 +33,9 @@ k  = w ./ c .* (1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 tl = interp1(z, tl, zl, 'linear');
 
-ShowSoundField(r, zl, tl, tlmin, tlmax, casename);
+% ShowSoundField(r, zl, tl, tlmin, tlmax, casename);
 
-% ShowTLcurve(r, zr, tl_zr);
+ShowTLcurve(r, zr, tl_zr);
 
 toc
 %--------------------------------------------------------------------------
@@ -82,17 +82,17 @@ function D = Collocation(N, x)
 
 end
 
-function [psi, psizs] = Normalization(eigvector, z, zs)
+function [psi, psizs] = Normalization(eigvector, H, z, zs)
 
-    norm = zeros(size(eigvector, 2), 1);
+    norm = zeros( size( eigvector, 2 ), 1 );
 
-    for i = 1 : size(eigvector, 2)
+    for i = 1 : size( eigvector, 2 )
 
-        norm(i) = ChebGaussQuadrature( eigvector(:, i) .^ 2 );
+        norm(i) = ChebGaussQuadrature( eigvector(:, i) .^ 2 )* H / 2 ;
 
     end
 
-    psi   = eigvector * diag( 1.0 ./ sqrt( z( length(z) ) / 2 * norm ) );
+    psi   = eigvector * diag( 1.0 ./ sqrt( norm ) );
     psizs = interp1(z, psi, zs, 'linear');
 
 end

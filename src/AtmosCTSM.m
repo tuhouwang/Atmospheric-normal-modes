@@ -1,6 +1,6 @@
 
 clear;
-close all;
+% close all;
 clc;
 % edit 'input_CAA.txt';
 tic
@@ -34,9 +34,9 @@ k  = w ./ c .*(1.0 + 1i * alpha / (40 * pi * log10(exp(1.0))));
 
 [tl,  tl_zr] = SynthesizeSoundField(r, kr, zl, zr, psizs, psi);
 
-ShowSoundField(r, zl, tl, tlmin, tlmax, casename);
+% ShowSoundField(r, zl, tl, tlmin, tlmax, casename);
 
-% ShowTLcurve(r, zr, tl_zr);
+ShowTLcurve(r, zr, tl_zr);
 
 toc
 %-------------------------------------------------------------------------- 
@@ -73,14 +73,29 @@ end
 function [psi, psizs] = Normalization(eigvector, nmodes, H, x, xr, zr, zs)
    
    psix  = InvChebTrans(eigvector, x); 
-   f     = zeros(nmodes,1);   
+   norm  = zeros(nmodes,1);   
 
      for j=1 : nmodes
-          f(j) = ChebGaussQuadrature( psix(:, j) .^2) * H / 2;  
+          norm(j) = ChebGaussQuadrature( psix(:, j) .^2 ) * H / 2;  
      end
   
    psi   = InvChebTrans(eigvector, xr);      
-   psi   = psi * diag(1.0 ./ sqrt(f) ); 
+   psi   = psi * diag(1.0 ./ sqrt( norm ) ); 
    psizs = interp1(zr, psi, zs, 'linear');
-   
+
+%    psi   = InvChebTrans(eigvector, xr); 
+%    N     = size(eigvector, 1) - 1;
+%    f     = zeros(N+1, nmodes);
+%    
+%    P = zeros(1, N+1);
+%    k = 0 : 2 : N;
+%    P(k+1) = -2 ./(k.^2-1);
+%    
+%    parfor j=1 : nmodes
+%       f(:,j) = ConvolutionMatrix(eigvector(:, j)) * eigvector(:, j);  
+%    end
+%    
+%    psi   = psi * diag(1.0 ./sqrt(P * f * H / 2));  
+%    psizs = interp1(zr, psi, zs, 'linear');
+
 end
