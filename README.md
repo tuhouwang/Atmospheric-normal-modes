@@ -1,2 +1,2 @@
 # Atmospheric-normal-modes
-The spectral methods for normal modes in atmosphere.
+Two Chebyshev Spectral Methods for Solving Normal Modes in Atmospheric Acoustics.
